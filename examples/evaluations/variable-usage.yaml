@@ -1,0 +1,30 @@
+id: variable-usage-examples
+
+models:
+- id: gpt4-mini-base
+  name: gpt4-mini
+  provider: openai
+  temperature: 0.3
+  max_tokens: 150
+
+prompts:
+- id: default_time_aware
+  system: |
+    You are a helpful assistant that provides time-sensitive information.
+    Current date: {{datetime}}
+    Format your responses to be concise and relevant to the current date.
+
+x-tests-time: &x-tests-time
+- id: weather-forecast
+  messages:
+    - role: user
+      content: |
+        Given that today is {{datetime}}, write a short weather forecast for tomorrow.
+        Keep it under 20 words.
+
+- id: tech-events
+  messages:
+    - role: user
+      content: |
+        Today is {{datetime}}. List three major technology events or releases 
+        expected in the next 30 days.

@@ -1,0 +1,31 @@
+id: code-review-examples
+
+models:
+- id: gpt-4o-mini
+  name: gpt-4o-mini
+  provider: openai
+  temperature: 0.1
+  max_tokens: 150
+
+prompts:
+- id: default_reviewer
+  system: |
+    You are a precise and thorough code reviewer and technical explainer.
+    Provide specific, actionable feedback and clear explanations.
+    Focus on best practices, edge cases, and maintainability.
+
+tests:
+- id: code-feedback
+  messages:
+    - role: user
+      content: |
+        Review this code snippet and provide specific feedback:
+        ```python
+        def calculate_age(birth_year):
+            return 2025 - birth_year
+        ```
+
+- id: dns-explanation
+  messages:
+    - role: user
+      content: Explain how a DNS lookup works in simple terms.

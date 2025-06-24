@@ -1,0 +1,31 @@
+id: Multi-Model Temperature Comparison
+description: Compare how different temperature settings affect model responses
+models:
+  - id: gpt-4o-mini-conservative
+    provider: openai
+    name: gpt-4o-mini
+    temperature: 0.2
+
+  - id: gpt-4o-mini-creative
+    provider: openai
+    name: gpt-4o-mini
+    temperature: 0.8
+
+prompts:
+- id: default_researcher
+  system: |
+    You are a helpful crypto research assistant. Your role is to:
+    1. Provide token statistics and analysis
+    2. Share relevant market news
+    3. Explain technical concepts clearly
+    Never give investment advice or price predictions.
+
+tests:
+- id: summarize-text
+  messages: 
+  - role: user
+    content: 'Summarize this text in one sentence: "The quick brown fox jumped over the lazy dog. The dog was too tired to chase after it. The fox continued running into the forest."'
+- id: generate-story-title
+  messages: 
+  - role: user
+    content: Create a title for a story about a space explorer discovering an ancient alien library.

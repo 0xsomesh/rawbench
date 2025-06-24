@@ -1,0 +1,35 @@
+id: format-test-examples
+
+models:
+- id: gpt-4o-mini
+  name: gpt-4o-mini
+  provider: openai
+  temperature: 0.2
+  max_tokens: 200
+
+prompts:
+- id: default_evaluator
+  system: |
+    You are a precise and structured response generator.
+    Follow the format requirements exactly.
+    Provide clear, accurate, and well-structured information.
+
+tests:
+- id: json-generation
+  messages:
+    - role: user
+      content: |
+        Generate a JSON object representing a book with title, author, and publication year.
+        The response must be valid JSON.
+
+- id: list-generation
+  messages:
+    - role: user
+      content: List three potential causes of a computer not booting up.
+      
+- id: table-generation
+  messages:
+    - role: user
+      content: |
+        Create a small comparison table of three programming languages 
+        showing their typical use cases and key features.
