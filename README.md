@@ -61,7 +61,8 @@ cd prompts-eval
 # initiate rawbench
 rawbench init
 
-# configure openai api key in .env
+# export openai api key
+EXPORT OPENAI_API_KEY="<your_key_here>"
 
 # Run evaluation
 rawbench run evaluations/template.yaml

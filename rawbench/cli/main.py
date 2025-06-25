@@ -49,16 +49,16 @@ def create_template(output_file):
         "description": "A template for evaluating chat model responses",
         "models": [
             {
-                "id": "gpt-4",
+                "id": "gpt-4o-mini",
                 "provider": "openai",
-                "model": "gpt-4",
+                "name": "gpt-4o-mini",
                 "temperature": 0.7,
                 "max_tokens": 2000
             },
             {
                 "id": "gpt-35-turbo",
                 "provider": "openai", 
-                "model": "gpt-3.5-turbo",
+                "name": "gpt-3.5-turbo",
                 "temperature": 0.7,
                 "max_tokens": 2000
             }
