@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field, asdict
+from .html_export import export_results_to_html
 
 @dataclass
 class Result:
@@ -11,7 +12,7 @@ class Result:
     test_id: str
     input_messages: List[Dict[str, str]]
     output_content: str
-    output_messages: List[Dict[str, str]]
+    output_message: Dict[str, str]
     completion_tokens: int = 0
     prompt_tokens: int = 0
     total_tokens: int = 0
@@ -64,5 +65,12 @@ class ResultCollector:
             'results': [r.to_dict() for r in self.results]
         }
         
-        with open("results/" + filepath, 'w') as f:
+        with open(filepath, 'w') as f:
             json.dump(data, f, indent=2)
+
+    def export_to_html(self, filepath: str):
+        data = {
+            'summary': self.get_summary(),
+            'results': [r.to_dict() for r in self.results],
+        }
+        export_results_to_html(data, filepath)

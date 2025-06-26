@@ -8,7 +8,7 @@ from litellm import ModelResponse
 
 
 class Response:
-    def __init__(self, evaluation_id, model_id, test_id, model_name, test_name, input_messages, output_content, output_messages, tokens_used=None, cost=None, latency_ms=0, status='success', error_message=None, metadata=None):
+    def __init__(self, evaluation_id, model_id, test_id, model_name, test_name, input_messages, output_content, output_message, tokens_used=None, cost=None, latency_ms=0, status='success', error_message=None, metadata=None):
         self.evaluation_id = evaluation_id
         self.model_id = model_id
         self.test_id = test_id
@@ -16,7 +16,7 @@ class Response:
         self.test_name = test_name
         self.input_messages = input_messages
         self.output_content = output_content
-        self.output_messages = output_messages
+        self.output_message = output_message
         self.tokens_used = tokens_used
         self.cost = cost
         self.latency_ms = latency_ms

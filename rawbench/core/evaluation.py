@@ -84,7 +84,7 @@ class Evaluation:
                         test_id=test_id,
                         input_messages=complete_messages,
                         output_content=response.choices[0].message.content,
-                        output_messages=response.choices[0].message.to_dict(),
+                        output_message=response.choices[0].message.to_dict(),
                         completion_tokens=response.usage.completion_tokens,
                         prompt_tokens=response.usage.prompt_tokens,
                         total_tokens=response.usage.total_tokens,
@@ -100,7 +100,7 @@ class Evaluation:
             print(f"  Total Tokens: {summary['total_tokens']}")
         if summary['avg_latency'] > 0:
             print(f"  Avg Latency: {summary['avg_latency']:.0f}ms")
-        return self.result_collector.results
+        return self.result_collector
     
     def get_results(self):
         """Get all results for this evaluation."""

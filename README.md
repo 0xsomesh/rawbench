@@ -34,10 +34,10 @@ Most prompt testing tools are either too academic or too bloated.
 - CLI and Python API interfaces
 - Extensible tool mocking system
 - Dynamic variable injection
+- Beautiful html reports
 
 ### Coming soon 🔜
 
-- markdown reports
 - UI
 - anthoric, openrouter support
 - documentation
@@ -54,18 +54,15 @@ make install
 ## 🧹 Usage
 
 ```bash
-# make a new directory
-mkdir prompts-eval
-cd prompts-eval
-
 # initiate rawbench
-rawbench init
+rawbench init rawbench_tests
+cd rawbench_tests
 
 # export openai api key
 EXPORT OPENAI_API_KEY="<your_key_here>"
 
 # Run evaluation
-rawbench run evaluations/template.yaml
+rawbench run tests/template.yaml --html -o template_result
 ```
 
 ## 📝 Configuration Guide

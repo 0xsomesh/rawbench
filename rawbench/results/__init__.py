@@ -6,14 +6,6 @@ Results management and reporting.
 
 # Import core result classes
 from .result import Result, ResultCollector
+from .html_export import export_results_to_html
 
-# # Lazy load transformer to avoid circular imports
-# MarkdownTransformer = None
-# def get_transformer():
-#     global MarkdownTransformer
-#     if MarkdownTransformer is None:
-#         from .markdown_transformer import MarkdownTransformer as MT
-#         MarkdownTransformer = MT
-#     return MarkdownTransformer
-
-__all__ = ['Result', 'ResultCollector']
+__all__ = ['Result', 'ResultCollector', 'export_results_to_html']
