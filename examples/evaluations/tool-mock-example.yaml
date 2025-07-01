@@ -1,1 +1,63 @@
+id: tool-mock-example
 
+models:
+  - id: gpt-4o-mini
+    name: gpt-4o-mini
+    provider: openai
+    temperature: 0.7
+    max_tokens: 1024
+
+tools:
+  - id: websearch_tool
+    name: websearch_tool
+    description: Provides web search capabilities.
+    parameters:
+      type: object
+      properties:   
+        query:
+          type: string
+          description: The search query to perform.
+      required:
+        - query
+    mock:
+      output: '{"results": [{"title": "Example Result", "link": "https://example.com", "snippet": "This is an example search result."}]}'
+  
+  - id: summarize_tool
+    name: summarize_tool
+    description: Summarizes text content.
+    parameters:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Text to summarize.
+      required:
+        - text
+    mock:
+      output: '{"summary": "This is a mock summary of the provided text."}'
+  
+prompts:
+  - id: wesearch-prompt
+    system: |
+      You are a helpful assistant that can perform web searches to find information.
+      Use the web search tool to answer questions that require current or specific information.
+
+tests:
+  - id: test1
+    tool_execution:
+      mode: mock
+      max_iterations: 3
+    messages:
+      - role: user
+        content: What is rawbench?
+
+  - id: test2
+    tool_execution:
+      mode: mock
+      max_iterations: 3
+      output:
+        - id: websearch_tool
+          output: '{"results": [{"title": "Rawbench Overview", "link": "https://rawbench.example.com", "snippet": "Rawbench is a benchmarking tool for evaluating performance."}]}'
+    messages:
+      - role: user
+        content: What is rawbench?

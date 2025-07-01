@@ -2,7 +2,8 @@ import json
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field, asdict
-from .html_export import export_results_to_html
+from .html.html_export import export_results_to_html
+from litellm import ModelResponse
 
 @dataclass
 class Result:
@@ -12,7 +13,7 @@ class Result:
     test_id: str
     input_messages: List[Dict[str, str]]
     output_content: str
-    output_message: Dict[str, str]
+    output_messages: List[ModelResponse]
     completion_tokens: int = 0
     prompt_tokens: int = 0
     total_tokens: int = 0

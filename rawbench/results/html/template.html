@@ -1,8 +1,3 @@
-import os
-from datetime import datetime
-from jinja2 import Template
-
-HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html>
 <head>
@@ -98,39 +93,16 @@ HTML_TEMPLATE = """
 
             <h4>Output Message</h4>
             <div class="messages">
-                <div class="message">
-                    <strong>{{ result.output_message.role }}:</strong>
-                    <pre>{{ result.output_message.content }}</pre>
+                {% for result in result.output_messages %}
+                    <div class="message">
+                        <strong>{{ result.role }}:</strong>
+                        <pre>{{ result.content }}</pre>
+                    </div>
+                {% endfor %}
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
 </body>
-</html>
-"""
-
-def export_results_to_html(data, output_path: str) -> None:
-    """
-    Export results to an HTML file.
-    
-    Args:
-        collector: ResultCollector containing the results to export
-        output_path: Path where the HTML file should be saved
-    """
-    template = Template(HTML_TEMPLATE)
-    
-    
-    # Render HTML
-    html_content = template.render(
-        results=data['results'],
-        summary=data['summary'],
-        generated_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    )
-    
-    # Ensure the directory exists
-    os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
-    
-    # Write the HTML file
-    with open(output_path, 'w', encoding='utf-8') as f:
-        f.write(html_content)
+</html> 

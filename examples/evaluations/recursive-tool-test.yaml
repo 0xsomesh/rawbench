@@ -1,0 +1,59 @@
+id: recursive-tool-test
+
+models:
+  - id: gpt-4o-mini
+    name: gpt-4o-mini
+    provider: openai
+    temperature: 0.7
+    max_tokens: 1024
+
+tools:
+  - id: search_tool
+    name: search_tool
+    description: Search for information on a topic.
+    parameters:
+      type: object
+      properties:
+        query:
+          type: string
+          description: Search query.
+      required:
+        - query
+    mock:
+      output: '{"results": [{"title": "Search Result", "content": "This is search result content."}]}'
+  
+  - id: summarize_tool
+    name: summarize_tool
+    description: Summarize text content.
+    parameters:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Text to summarize.
+      required:
+        - text
+    mock:
+      output: '{"summary": "This is a summary of the provided text."}'
+
+prompts:
+  - id: research-assistant
+    system: |
+      You are a research assistant. When asked to research a topic:
+      1. Use the search tool to find information
+      2. Use the summarize tool to create a summary
+      3. Provide a final answer based on the research
+
+tests:
+  - id: research-task
+    tool_execution:
+      mode: mock
+      max_iterations: 5
+      output:
+        - id: search_tool
+          output: '{"results": [{"title": "AI Research", "content": "Recent developments in artificial intelligence show significant progress in language models and computer vision."}]}'
+        - id: summarize_tool
+          output: '{"summary": "AI has made significant progress in language models and computer vision."}'
+    messages:
+      - role: user
+        content: "Research the latest developments in AI and provide a summary." 

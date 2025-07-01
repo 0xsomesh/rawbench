@@ -5,7 +5,7 @@ from datetime import datetime
 
 from ..config import load_config, validate_config 
 from ..core import Evaluation
-from ..results.html_export import export_results_to_html
+from ..results.html.html_export import export_results_to_html
 from ..results import ResultCollector
 
 class EvaluationService:

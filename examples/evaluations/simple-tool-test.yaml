@@ -1,0 +1,37 @@
+id: simple-tool-test
+
+models:
+  - id: gpt-4o-mini
+    name: gpt-4o-mini
+    provider: openai
+    temperature: 0.7
+    max_tokens: 1024
+
+tools:
+  - id: calculator
+    name: calculator
+    description: Performs mathematical calculations.
+    parameters:
+      type: object
+      properties:
+        expression:
+          type: string
+          description: Mathematical expression to evaluate.
+      required:
+        - expression
+    mock:
+      output: '{"result": 42, "expression": "{{expression}}"}'
+
+prompts:
+  - id: math-assistant
+    system: |
+      You are a helpful math assistant. Use the calculator tool when users ask for calculations.
+
+tests:
+  - id: basic-calculation
+    tool_execution:
+      mode: mock
+      max_iterations: 2
+    messages:
+      - role: user
+        content: "What is 15 + 27?" 

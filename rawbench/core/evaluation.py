@@ -62,20 +62,20 @@ class Evaluation:
                 for var_id, var_value in self.variables.items():
                     system_prompt = system_prompt.replace(f"{{{{{var_id}}}}}", str(var_value))
 
-                print(f"      System Prompt: {system_prompt}...")
-
                 for test in self.tests:
                     test_id = test['id']
-                    print(f"        Running test: {test['id']}, Model: {model_config['id']}, System Prompt: {system_prompt[:30]}...")
+                    print(f"        Running test: {test['id']}")
                     complete_messages = test['messages']
 
                     # Run the test
-                    response, latency = model.run(
+                    response = model.run(
                         test, 
                         tools=tools,
                         tool_execution_config=test.get('tool_execution'),
                         system_prompt=system_prompt
                     )
+                    last_response = response.output_messages[-1]
+
 
                     result = Result(
                         id=f"{self.id}::{model_id}::{prompt_id}::{test_id}",
@@ -83,12 +83,12 @@ class Evaluation:
                         prompt_id=prompt_id,
                         test_id=test_id,
                         input_messages=complete_messages,
-                        output_content=response.choices[0].message.content,
-                        output_message=response.choices[0].message.to_dict(),
-                        completion_tokens=response.usage.completion_tokens,
-                        prompt_tokens=response.usage.prompt_tokens,
-                        total_tokens=response.usage.total_tokens,
-                        latency_ms=latency,
+                        output_content=last_response.choices[0].message.content,
+                        output_messages=[response.output_messages[i].choices[0].message.to_dict() for i in range(len(response.output_messages))],
+                        completion_tokens=last_response.usage.completion_tokens,
+                        prompt_tokens=last_response.usage.prompt_tokens,
+                        total_tokens=last_response.usage.total_tokens,
+                        latency_ms=sum(response.latencies),
                     )
                     self.result_collector.add_result(result)
 

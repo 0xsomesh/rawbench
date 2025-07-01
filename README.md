@@ -12,7 +12,7 @@ Most prompt testing tools are either too academic or too bloated.
 **RawBench is for devs who want:**
 
 - 🧱 YAML-first, CLI-native workflow (like `docker-compose` for prompts)
-- ⚙️ Built in tool call mocking
+- ⚙️ Built in tool call mocking with recursive support
 - 🧠 Dynamic variables (functions, env, time, etc.)
 - 🧪 Multi-model testing with latency + cost metrics
 - 🧼 Zero setup, just run `rawbench init && rawbench run`
@@ -32,7 +32,7 @@ Most prompt testing tools are either too academic or too bloated.
 - Variable substitution and template system
 - Metrics for latency, tokens, and costs
 - CLI and Python API interfaces
-- Extensible tool mocking system
+- **Extensible tool mocking system with recursive support**
 - Dynamic variable injection
 - Beautiful html reports
 
@@ -94,6 +94,44 @@ tests:
         content: Test message content
 ```
 
+### Tool Mocking
+
+RawBench supports powerful tool mocking for testing agents that use function calling:
+
+```yaml
+tools:
+  - id: search_tool
+    name: search_tool
+    description: Search for information
+    parameters:
+      type: object
+      properties:
+        query:
+          type: string
+          description: Search query
+      required: [query]
+    mock:
+      output: '{"results": [{"title": "Example", "content": "Search result"}]}'
+
+tests:
+  - id: search-test
+    tool_execution:
+      mode: mock                    # mock or actual
+      max_iterations: 5             # Prevent infinite loops
+      output:                       # Test-specific mocks (overrides global)
+        - id: search_tool
+          output: '{"results": [{"title": "Custom", "content": "Custom result"}]}'
+    messages:
+      - role: user
+        content: "Search for information about AI"
+```
+
+**Tool Mocking Features:**
+- **Recursive Support**: Handles multiple tool calls in sequence
+- **Priority Resolution**: Test-specific mocks override global mocks
+- **Loop Prevention**: `max_iterations` prevents infinite loops
+- **Clean Configuration**: Simple YAML structure
+
 ### Multiple Models
 
 You can compare multiple models or different configurations of the same model:
@@ -149,6 +187,11 @@ prompts:
    - Mock external tool calls
    - Test tool-using agents
 
+5. **Recursive Tool Testing**
+   - Location: `examples/evaluations/recursive-tool-test.yaml`
+   - Test agents that make multiple tool calls
+   - Complex workflow testing
+
 ## 🔖 Requirements
 
 - Python ≥ 3.8
@@ -165,4 +208,5 @@ Check the `examples/evaluations/` directory for more sample configurations:
 - `format-tests.yaml`: Test response formatting
 - `variable-function-example.yaml`: Dynamic variable injection
 - `tool-mock-example.yaml`: Tool mocking examples
+- `recursive-tool-test.yaml`: Recursive tool calling tests
 - `complex-criteria.yaml`: Advanced evaluation criteria

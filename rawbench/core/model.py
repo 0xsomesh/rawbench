@@ -1,28 +1,20 @@
 import os
 import time
+import json
 import litellm
 from ..utils.credentials import Credential
 from ..results.result import Result
 from .tool_execution import ToolExecutionHandler
 from litellm import ModelResponse
+from dataclasses import dataclass
+from typing import List
 
+MAX_ITERATIONS = 10
 
+@dataclass
 class Response:
-    def __init__(self, evaluation_id, model_id, test_id, model_name, test_name, input_messages, output_content, output_message, tokens_used=None, cost=None, latency_ms=0, status='success', error_message=None, metadata=None):
-        self.evaluation_id = evaluation_id
-        self.model_id = model_id
-        self.test_id = test_id
-        self.model_name = model_name
-        self.test_name = test_name
-        self.input_messages = input_messages
-        self.output_content = output_content
-        self.output_message = output_message
-        self.tokens_used = tokens_used
-        self.cost = cost
-        self.latency_ms = latency_ms
-        self.status = status
-        self.error_message = error_message or ""
-        self.metadata = metadata or {}
+    output_messages: List[ModelResponse]
+    latencies: List[int]
 
 class Model:
     def __init__(self, id, name, provider, temperature=0.0, max_tokens=1000, top_p=1.0, frequency_penalty=0.0, presence_penalty=0.0, seed=None, credential=None):
@@ -35,14 +27,14 @@ class Model:
         self.frequency_penalty = frequency_penalty
         self.presence_penalty = presence_penalty
         self.seed = seed
-        self.credential = credential or Credential(os.getenv("OPENAI_API_KEY"))
         
         # Set up litellm
         litellm.set_verbose = False
         
-    def run(self, test, tools=None, tool_execution_config=None, system_prompt=None) -> tuple[ModelResponse, int]:
-        """Run a test against this model."""
+    def run(self, test, tools=None, tool_execution_config=None, system_prompt=None) -> Response:
+        """Run a test against this model with tool execution support."""
         messages = []
+        response = Response(output_messages=[], latencies=[])
         
         # Add system prompt if provided
         if system_prompt:
@@ -51,11 +43,10 @@ class Model:
         # Add test messages
         messages.extend(test['messages'])
         
-        # Prepare function calling if tools are provided
-        function_calling = None
+        # Prepare tools for API
+        formatted_tools = None
         if tools:
-            # Format tools for OpenAI API
-            tools = [{
+            formatted_tools = [{
                 "type": "function",
                 "function": {
                     "name": tool["name"],
@@ -63,31 +54,61 @@ class Model:
                     "parameters": tool["parameters"]
                 }
             } for tool in tools]
-            function_calling = "auto"
         
-        # Start timer
-        start_time = time.time()
+        # Initialize tool handler
+        tool_handler = None
+        if tool_execution_config:
+            tool_handler = ToolExecutionHandler(tool_execution_config, tools)
         
-        # Make the API call
-        response = litellm.completion(
-            model=self.name,
-            messages=messages,
-            temperature=self.temperature,
-            max_tokens=self.max_tokens,
-            top_p=self.top_p,
-            frequency_penalty=self.frequency_penalty,
-            presence_penalty=self.presence_penalty,
-            seed=self.seed,
-            tools=tools,
-            tool_choice=function_calling
-        )
+        # Tool execution loop
+        iteration = 0
+        max_iterations = tool_handler.max_iterations if tool_handler and tool_handler.max_iterations else MAX_ITERATIONS
         
-        # Calculate latency
-        latency_ms = int((time.time() - start_time) * 1000)
-        
-        # Handle tool execution if needed
-        if tool_execution_config and hasattr(response.choices[0].message, 'tool_calls') and response.choices[0].message.tool_calls:
-            tool_handler = ToolExecutionHandler(tool_execution_config)
-            response = tool_handler.execute_tools(response, tools)
+        while iteration < max_iterations:
+            # Make API call
+            start_time = time.time()
+            model_response = litellm.completion(
+                model=self.name,
+                messages=messages,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+                top_p=self.top_p,
+                frequency_penalty=self.frequency_penalty,
+                presence_penalty=self.presence_penalty,
+                seed=self.seed,
+                tools=formatted_tools,
+                tool_choice="auto" if formatted_tools else None
+            )
+            
+            # Track response
+            response.latencies.append(int((time.time() - start_time) * 1000))
+            print(f"Model Response: {model_response}")
+            response.output_messages.append(model_response)
+            
+            # Check for tool calls
+            if (tool_handler and 
+                hasattr(model_response.choices[0].message, 'tool_calls') and 
+                model_response.choices[0].message.tool_calls):
+                
+                # Add model message to conversation
+                messages.append(model_response.choices[0].message.to_dict())
+                
+                # Execute tools and add results
+                for tool_call in model_response.choices[0].message.tool_calls:
+                    tool_name = tool_call.function.name
+                    tool_args = json.loads(tool_call.function.arguments)
+                    tool_result = tool_handler.execute_tool(tool_name, tool_args)
                     
-        return response, latency_ms
+                    messages.append({
+                        "role": "tool",
+                        "tool_call_id": tool_call.id,
+                        "content": tool_result
+                    })
+                
+                iteration += 1
+                continue
+            else:
+                # No tool calls, we're done
+                break
+        
+        return response
