@@ -1,10 +1,5 @@
-from typing import Any, Dict, List
 from .model import Model
-import os
-import time
-from ..utils.credentials import Credential
 from ..results.result import Result, ResultCollector
-from ..config.loader import load_config, validate_config
 from .variables import load_variables
 
 
@@ -52,7 +47,6 @@ class Evaluation:
                 model_config.get('frequency_penalty', 0.0),
                 model_config.get('presence_penalty', 0.0),
                 model_config.get('seed', None),
-                Credential(os.getenv("OPENAI_API_KEY"))
             )
             for prompt in self.prompts:
                 prompt_id = prompt['id']
@@ -100,6 +94,8 @@ class Evaluation:
             print(f"  Total Tokens: {summary['total_tokens']}")
         if summary['avg_latency'] > 0:
             print(f"  Avg Latency: {summary['avg_latency']:.0f}ms")
+        print(f"  Models: {summary['count_models']}")
+        print(f"  Prompts: {summary['count_prompts']}")
         return self.result_collector
     
     def get_results(self):

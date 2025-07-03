@@ -5,53 +5,56 @@ Powerful, minimal framework for LLM prompt evaluation with YAML configuration, t
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## ⚡️ Why RawBench?
+## Why RawBench?
 
 Most prompt testing tools are either too academic or too bloated.
 
 **RawBench is for devs who want:**
 
-- 🧱 YAML-first, CLI-native workflow (like `docker-compose` for prompts)
-- ⚙️ Built in tool call mocking with recursive support
-- 🧠 Dynamic variables (functions, env, time, etc.)
-- 🧪 Multi-model testing with latency + cost metrics
-- 🧼 Zero setup, just run `rawbench init && rawbench run`
+- YAML-first, CLI-native minimal workflow
+- Built in tool call mocking with recursive support
+- Dynamic variables (functions, env, time, etc.)
+- Multi-model testing with latency + cost metrics
+- Zero setup, just run `rawbench init && rawbench run`
 
 ---
 
 
 
-![Terminal Output](assets/terminal_output.png)
+![Terminal Output](assets/dashboard.png)
 
 
 
-## 🚀 Features
+## Features
+
+### Live
 
 - Multi-model testing with simultaneous evaluation
 - YAML configuration with Docker-compose style anchors
 - Variable substitution and template system
 - Metrics for latency, tokens, and costs
 - CLI and Python API interfaces
-- **Extensible tool mocking system with recursive support**
+- **Extensible tool mocking system**
 - Dynamic variable injection
 - Beautiful html reports
+- **Local dashboard for interactive result viewing**
 
-### Coming soon 🔜
+### roadmap
 
-- UI
-- anthoric, openrouter support
-- documentation
-- pypi release
+- assertions
+- response caching
+- ai judge
+- prompt auto-finetuning
+- more llm providers
+- ...
 
-## 💻 Installation
+## Quickstart
 
 ```bash
 git clone https://github.com/0xsomesh/rawbench.git
 cd rawbench
 make install
 ```
-
-## 🧹 Usage
 
 ```bash
 # initiate rawbench
@@ -63,13 +66,41 @@ EXPORT OPENAI_API_KEY="<your_key_here>"
 
 # Run evaluation
 rawbench run tests/template.yaml --html -o template_result
+
+# Start local dashboard server
+rawbench serve --port 8000
 ```
 
-## 📝 Configuration Guide
+## Local Dashboard
+
+RawBench now includes a local React dashboard for interactive result viewing:
+
+- **Interactive Results Viewer**: Browse and analyze evaluation results with a modern web interface
+- **Real-time Updates**: View results as they're generated
+- **Detailed Metrics**: Explore latency, token usage, and cost breakdowns
+- **Test Case Analysis**: Drill down into individual test cases and responses
+- **Model Comparison**: Compare performance across different models side-by-side
+
+To start the dashboard:
+```bash
+rawbench serve --port 8000
+```
+
+Then open your browser to `http://localhost:8000` to access the dashboard.
+
+![heatmap](assets/heatmap.png)
+---
+![testlist](assets/list.png)
+---
+![raw_json](assets/raw_json.png)
+
+
+
+## Configuration
 
 RawBench uses YAML files for configuration. Here's a comprehensive guide to the configuration options:
 
-### Basic Structure
+### Basics
 
 ```yaml
 id: evaluation-name
@@ -97,6 +128,10 @@ tests:
 ### Tool Mocking
 
 RawBench supports powerful tool mocking for testing agents that use function calling:
+- **Recursive**: Handles multiple tool calls in sequence
+- **Priority Resolution**: Test-specific mocks override global mocks
+- **Loop Prevention**: `max_iterations` prevents infinite loops
+- **Clean**: Simple YAML structure
 
 ```yaml
 tools:
@@ -126,13 +161,7 @@ tests:
         content: "Search for information about AI"
 ```
 
-**Tool Mocking Features:**
-- **Recursive Support**: Handles multiple tool calls in sequence
-- **Priority Resolution**: Test-specific mocks override global mocks
-- **Loop Prevention**: `max_iterations` prevents infinite loops
-- **Clean Configuration**: Simple YAML structure
-
-### Multiple Models
+### Models
 
 You can compare multiple models or different configurations of the same model:
 
@@ -147,6 +176,21 @@ models:
     provider: openai
     name: gpt-4
     temperature: 0.8
+```
+
+### Prompts
+
+You can compare multiple prompts:
+
+```yaml
+prompts:
+- id: default_researcher
+  system: |
+    You are a helpful crypto research assistant.
+
+- id: default_teacher
+  system: |
+    You are a knowledgeable teacher.
 ```
 
 ### Variables and Dynamic Content
@@ -164,6 +208,8 @@ prompts:
       Current time is {{current_time}}
       Please consider this timestamp in your responses.
 ```
+
+Note: You'll have to create a new file `current_time` and define a function `current_time` returning the string
 
 ### Example Configurations
 
@@ -192,21 +238,10 @@ prompts:
    - Test agents that make multiple tool calls
    - Complex workflow testing
 
-## 🔖 Requirements
+## Requirements
 
 - Python ≥ 3.8
 
-## 🪪 License
+## License
 
 MIT
-
-## 📚 Examples
-
-Check the `examples/evaluations/` directory for more sample configurations:
-
-- `multi-model-comparison.yaml`: Compare different models and parameters
-- `format-tests.yaml`: Test response formatting
-- `variable-function-example.yaml`: Dynamic variable injection
-- `tool-mock-example.yaml`: Tool mocking examples
-- `recursive-tool-test.yaml`: Recursive tool calling tests
-- `complex-criteria.yaml`: Advanced evaluation criteria

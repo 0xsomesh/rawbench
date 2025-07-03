@@ -2,8 +2,6 @@ import os
 import time
 import json
 import litellm
-from ..utils.credentials import Credential
-from ..results.result import Result
 from .tool_execution import ToolExecutionHandler
 from litellm import ModelResponse
 from dataclasses import dataclass
@@ -17,7 +15,7 @@ class Response:
     latencies: List[int]
 
 class Model:
-    def __init__(self, id, name, provider, temperature=0.0, max_tokens=1000, top_p=1.0, frequency_penalty=0.0, presence_penalty=0.0, seed=None, credential=None):
+    def __init__(self, id, name, provider, temperature=0.0, max_tokens=1000, top_p=1.0, frequency_penalty=0.0, presence_penalty=0.0, seed=None):
         self.id = id
         self.name = name
         self.provider = provider

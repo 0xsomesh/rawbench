@@ -8,10 +8,12 @@ import click
 from pathlib import Path
 from ..services.evaluation import EvaluationService
 from ..services.setup import SetupService
+from ..services.server import WebServer
 
 # Initialize services
 evaluation_service = EvaluationService()
 setup_service = SetupService()
+web_server = WebServer()
 
 @click.group()
 def main():
@@ -21,16 +23,30 @@ def main():
 @main.command()
 @click.argument('config_path')
 @click.option('-o', '--output', help='Output file path for results')
-@click.option('--html', is_flag=True, help='Generate HTML report')
-def run(config_path: str, output: str = None, html: bool = False):
+@click.option('--serve', is_flag=True, help='Start web server to view results')
+@click.option('--port', default=8000, help='Port for web server (default: 8000)')
+def run(config_path: str, output: str = None, serve: bool = False, port: int = 8000):
     """Run a benchmark evaluation"""
+    if not output:
+        from datetime import datetime
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_file_name = f"{Path(config_path).stem}_{timestamp}"
+        output_path = f"results/{output_file_name}"
+    else:
+        output_path = output
+    
     try:
         evaluation_service.run_evaluation(
             config_path=config_path,
-            output_path=output,
-            generate_html=html
+            output_path=output_path,
         )
         click.echo("✅ Evaluation completed successfully")
+        
+        if serve:            
+            click.echo(f"🌐 Starting web server on http://localhost:{port}")
+            click.echo(f"📊 Viewing results from: {output_path}.json")
+            web_server.serve_specific_result(output_path, port)
+            
     except Exception as e:
         click.echo(f"❌ Error running evaluation: {str(e)}", err=True)
         sys.exit(1)
@@ -55,6 +71,18 @@ def list(dir: str):
             click.echo("-" * 60)
     except Exception as e:
         click.echo(f"❌ Error listing evaluations: {str(e)}", err=True)
+        sys.exit(1)
+
+@main.command()
+@click.option('--port', default=8000, help='Port for web server (default: 8000)')
+def serve(port: int = 8000):
+    """Start web server to browse all evaluation results"""
+    try:
+        click.echo(f"🌐 Starting web server on http://localhost:{port}")
+        click.echo("📊 Browse all evaluation results")
+        web_server.serve_all_results(port)
+    except Exception as e:
+        click.echo(f"❌ Error starting web server: {str(e)}", err=True)
         sys.exit(1)
 
 @click.argument('dir')

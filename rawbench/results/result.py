@@ -2,7 +2,6 @@ import json
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field, asdict
-from .html.html_export import export_results_to_html
 from litellm import ModelResponse
 
 @dataclass
@@ -52,11 +51,14 @@ class ResultCollector:
         
         total_tokens = sum(r.total_tokens or 0 for r in self.results)
         avg_latency = sum(r.latency_ms or 0 for r in self.results) / total_results if total_results > 0 else 0
-        
+        count_models = len(set(r.model_id for r in self.results))
+        count_prompts = len(set(r.prompt_id for r in self.results))
         return {
             'total_results': total_results,
             'total_tokens': total_tokens,
-            'avg_latency': avg_latency
+            'avg_latency': avg_latency,
+            'count_models': count_models,
+            'count_prompts': count_prompts
         }
     
     def export_to_json(self, filepath: str):
@@ -68,10 +70,3 @@ class ResultCollector:
         
         with open(filepath, 'w') as f:
             json.dump(data, f, indent=2)
-
-    def export_to_html(self, filepath: str):
-        data = {
-            'summary': self.get_summary(),
-            'results': [r.to_dict() for r in self.results],
-        }
-        export_results_to_html(data, filepath)
