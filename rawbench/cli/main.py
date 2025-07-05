@@ -7,8 +7,12 @@ import sys
 import click
 from pathlib import Path
 from ..services.evaluation import EvaluationService
-from ..services.setup import SetupService
+from ..services.setup import SetupService 
 from ..services.server import WebServer
+from ..utils import load_env_file
+
+# Load environment variables from .env file
+load_env_file()
 
 # Initialize services
 evaluation_service = EvaluationService()

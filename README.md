@@ -50,20 +50,22 @@ Most prompt testing tools are either too academic or too bloated.
 
 ## Quickstart
 
+
+**Setup**
 ```bash
 git clone https://github.com/0xsomesh/rawbench.git
 cd rawbench
 make install
-```
 
-```bash
 # initiate rawbench
 rawbench init rawbench_tests
 cd rawbench_tests
+```
 
-# export openai api key
-EXPORT OPENAI_API_KEY="<your_key_here>"
+Enter the api keys of inference provides in `.env`. rawbench uses [litellm](https://github.com/BerriAI/litellm) to interact with the providers. Here is a list of all the [providers supported on rawbench](https://github.com/BerriAI/litellm?tab=readme-ov-file#supported-providers-docs).
 
+
+```bash
 # Run evaluation
 rawbench run tests/template.yaml --html -o template_result
 
@@ -71,7 +73,7 @@ rawbench run tests/template.yaml --html -o template_result
 rawbench serve --port 8000
 ```
 
-## Local Dashboard
+## Dashboard
 
 RawBench now includes a local React dashboard for interactive result viewing:
 
@@ -199,7 +201,7 @@ RawBench supports dynamic variables in your prompts:
 
 ```yaml
 variables:
-  current_time:
+  - id: current_time
     function: current_datetime  # Loads from variables/current_datetime.py
 
 prompts:

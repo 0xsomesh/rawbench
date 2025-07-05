@@ -32,8 +32,8 @@ class SetupService:
         template_config = {
             "id": "template_evaluation",
             "models": [{
-                "id": "gpt-4o-mini",
-                "name": "gpt-4o-mini",
+                "id": "openai/gpt-4o-mini",
+                "name": "openai/gpt-4o-mini",
                 "provider": "openai",
             }],
             "prompts": [{
@@ -51,7 +51,7 @@ class SetupService:
             ]
         }
         
-        config_path = project_dir / "tests" / "template.yaml"
+        config_path = project_dir / "evaluations" / "template.yaml"
         with open(config_path, "w") as f:
             yaml.dump(template_config, f, sort_keys=False)
     
@@ -71,7 +71,61 @@ __pycache__/
     def create_environment_file(self, project_dir: Path):
         """Create a .env file with default environment variables"""
         env_content = """# Environment variables for RawBench
-OPENAI_API_KEY=your_openai_api_key_here
+########### PROVIDERS ###########
+# Paste API keys for the providers you want to use
+
+# OpenAI
+OPENAI_API_KEY = ""
+OPENAI_BASE_URL = ""
+# Cohere
+COHERE_API_KEY = ""
+# OpenRouter
+OR_SITE_URL = ""
+OR_APP_NAME = "LiteLLM Example app"
+OR_API_KEY = ""
+# Azure API base URL
+AZURE_API_BASE = ""
+# Azure API version
+AZURE_API_VERSION = ""
+# Azure API key
+AZURE_API_KEY = ""
+# Replicate
+REPLICATE_API_KEY = ""
+REPLICATE_API_TOKEN = ""
+# Anthropic
+ANTHROPIC_API_KEY = ""
+# Infisical
+INFISICAL_TOKEN = ""
+# Novita AI
+NOVITA_API_KEY = ""
+# INFINITY
+INFINITY_API_KEY = ""
+# Groq
+GROQ_API_KEY = ""
+# DeepSeek
+DEEPSEEK_API_KEY = ""
+# Hugging Face
+HUGGINGFACE_API_KEY = ""
+# Gemini
+GEMINI_API_KEY = ""
+# Ollama
+OLLAMA_API_KEY = ""
+
+
+#################################
+
+
+
+
+
+########### RAWBENCH ###########
+
+# Custom variables directory (optional)
+PROMPT_EVAL_VARIABLES_DIR=variables
+
+# Server configuration (optional)
+RAWBENCH_SERVER_PORT=8000
+RAWBENCH_SERVER_HOST=0.0.0.0
 """
         with open(project_dir / ".env", "w") as f:
             f.write(env_content)

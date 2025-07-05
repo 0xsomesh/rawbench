@@ -1,14 +1,14 @@
 id: example-with-variables
 
 models:
-  - id: gpt-4o-mini
-    name: gpt-4o-mini
+  - id: openai/gpt-4o-mini
+    name: openai/gpt-4o-mini
     provider: openai
     temperature: 0.7
     max_tokens: 1024
 
 variables:
-  current_time:
+  - id: current_time
     function: current_datetime  # This will load and execute variables/current_datetime.py
   
 prompts:

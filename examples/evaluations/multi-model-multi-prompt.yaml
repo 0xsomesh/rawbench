@@ -1,14 +1,14 @@
 id: Multi-Model Temperature Comparison
 description: Compare how different temperature settings affect model responses
 models:
-  - id: gpt-4o-mini-conservative
+  - id: openai/gpt-4o-mini-conservative
     provider: openai
-    name: gpt-4o-mini
+    name: openai/gpt-4o-mini
     temperature: 0.2
 
-  - id: gpt-4o-mini-creative
+  - id: ollama/llama3.2:latest-creative
     provider: openai
-    name: gpt-4o-mini
+    name: ollama/llama3.2:latest
     temperature: 0.8
 
 prompts:

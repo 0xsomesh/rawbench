@@ -64,7 +64,10 @@ class Model:
         
         while iteration < max_iterations:
             # Make API call
+
+            litellm.drop_params = True
             start_time = time.time()
+    
             model_response = litellm.completion(
                 model=self.name,
                 messages=messages,

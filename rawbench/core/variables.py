@@ -85,19 +85,43 @@ def load_variables(variable_configs: Dict[str, Dict[str, str]]) -> Dict[str, Any
     Loads all variable functions from the config and executes them to get their values.
     
     Args:
-        variable_configs: Dictionary of variable configurations from the YAML file
+        variable_configs: List of variable configurations from the YAML file
+                         Each item should have 'id' and 'function' fields
         
     Returns:
         Dictionary mapping variable names to their computed values
     """
     variables = {}
     
-    for var_id, var_config in variable_configs.items():
-        if "function" in var_config:
-            func = load_variable_function(var_config["function"])
-            variables[var_id] = func()
-        else:
-            # Support for static values
-            variables[var_id] = var_config.get("value", "")
-            
+    # Handle list format for the new YAML structure
+    if isinstance(variable_configs, list):
+        for item in variable_configs:
+            if isinstance(item, dict) and "id" in item and "function" in item:
+                var_id = item["id"]
+                function_name = item["function"]
+                
+                # Load and execute the variable function
+                func = load_variable_function(function_name)
+                variables[var_id] = func()
+            else:
+                # Skip malformed items
+                continue
+    else:
+        # Fallback for dictionary format (legacy support)
+        for var_id, var_config in variable_configs.items():
+            if var_config is None:
+                continue
+            if isinstance(var_config, dict) and "function" in var_config:
+                func = load_variable_function(var_config["function"])
+                variables[var_id] = func()
+            elif isinstance(var_config, str):
+                func = load_variable_function(var_config)
+                variables[var_id] = func()
+            else:
+                # Support for static values
+                if isinstance(var_config, dict):
+                    variables[var_id] = var_config.get("value", "")
+                else:
+                    variables[var_id] = str(var_config)
+    
     return variables

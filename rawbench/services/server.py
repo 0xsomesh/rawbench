@@ -147,6 +147,16 @@ class WebServer:
     
     def _start_server(self, port: int = 8000, specific_file: Optional[str] = None):
         """Start the Flask server"""
+        # Get port and host from environment variables if available
+        env_port = os.environ.get('RAWBENCH_SERVER_PORT')
+        if env_port:
+            try:
+                port = int(env_port)
+            except ValueError:
+                print(f"⚠️  Invalid RAWBENCH_SERVER_PORT: {env_port}, using default: {port}")
+        
+        host = os.environ.get('RAWBENCH_SERVER_HOST', '0.0.0.0')
+        
         def open_browser():
             time.sleep(1)  # Give server time to start
             if specific_file:
@@ -166,7 +176,7 @@ class WebServer:
             print("⚠️  To build the frontend, run: cd frontend && make build")
         
         # Start Flask server
-        self.app.run(host='0.0.0.0', port=port, debug=False)
+        self.app.run(host=host, port=port, debug=False)
 
 if __name__ == "__main__":
     server = WebServer()

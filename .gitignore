@@ -210,7 +210,6 @@ __marimo__/
 # Eval
 evaluations/*
 results/*
-variables/*
 
 # add js ts gitignore
 node_modules/

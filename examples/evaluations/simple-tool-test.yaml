@@ -1,11 +1,11 @@
 id: simple-tool-test
 
 models:
-  - id: gpt-4o-mini
-    name: gpt-4o-mini
+  - id: openai/gpt-4o-mini
+    name: openai/gpt-4o-mini
     provider: openai
     temperature: 0.7
-    max_tokens: 1024
+    max_tokens: 1024  
 
 tools:
   - id: calculator

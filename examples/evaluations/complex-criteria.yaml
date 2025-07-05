@@ -1,8 +1,8 @@
 id: code-review-examples
 
 models:
-- id: gpt-4o-mini
-  name: gpt-4o-mini
+- id: openai/gpt-4o-mini
+  name: openai/gpt-4o-mini
   provider: openai
   temperature: 0.1
   max_tokens: 150
